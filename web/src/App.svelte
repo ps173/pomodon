@@ -17,7 +17,7 @@
  </Link>
  <div class="links">
   <Link to="/stats"><a href=none>Stats</a></Link>
-  <a href="https://github.com/ps173">github</a>
+  <a href="https://github.com/ps173/pomodon">github</a>
  </div>
 </div>
 
