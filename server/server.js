@@ -4,23 +4,16 @@ const cors = require("@koa/cors");
 const bodyParser = require("koa-bodyparser");
 const helmet = require("koa-helmet");
 const api_route = require("./routes/stats.js");
+const morgan = require("koa-morgan");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
-// X-response-time
-app.use(async function(ctx, next) {
- const start = new Date();
- await next();
- const ms = new Date() - start;
- ctx.set("X-Response-Time", `${ms}ms`);
-});
+mongoose.connect(process.env.DB_HOST);
+const db = mongoose.connection;
+db.on("error", (error) => console.error(error));
+db.once("open", () => console.log("Connected To Database"));
 
-// logger
-app.use(async function(ctx, next) {
- const start = new Date();
- await next();
- const ms = new Date() - start;
- console.log(`${ctx.method} ${ctx.url} - ${ms}`);
-});
-
+app.use(morgan("common"));
 app.use(cors());
 app.use(helmet());
 app.use(bodyParser());
