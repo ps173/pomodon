@@ -14,7 +14,8 @@ A funky pomodoro.
   * [x] Basic api routing
   * [ ] Make following routes
      - [x] stats : To get user-stats of sessions;
+         - Pending : delete and update methods 
      - [ ] users : To get all the users;
 
 - [ ] Make user schema
-- [ ] Make user-stats schema
+- [x] Make user-stats schema
