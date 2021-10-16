@@ -49,4 +49,3 @@ button:disabled {
 button:not(:disabled):active {
 	background-color: orangered;
 }
-
