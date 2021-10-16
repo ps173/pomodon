@@ -5,8 +5,9 @@ A funky pomodoro.
 # Todo
 - [ ] Frontend
   * [x] Timer 
+  * [ ] Switching to svelte kit for routing
+  * [ ] Google Auth 
   * [ ] Timer Settings 
-  * [ ] Login with firebase 
   * [ ] Connect to api
   * [ ] Music Player maybe ??
 

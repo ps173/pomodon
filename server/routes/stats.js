@@ -1,6 +1,6 @@
 const Router = require("@koa/router");
 const router = new Router();
-const userStats = require("../models/userStats");
+const userStats = require("../models/UserStats");
 
 // TODO: Extract the functionality
 
@@ -26,7 +26,6 @@ router.get("/stats/:user", async (ctx, next) => {
 
 // post to the route
 router.post("/stats/", async (ctx, next) => {
-  let response = ctx.request.body;
   let stats;
   try {
     stats = new userStats({
