@@ -2,7 +2,7 @@ const Router = require("@koa/router");
 const router = new Router();
 const userStats = require("../models/UserStats");
 
-// TODO: Extract the functionality
+// TODO: Extract the get by id as a middleware
 
 // get all
 router.get("/stats/", async (ctx, next) => {
