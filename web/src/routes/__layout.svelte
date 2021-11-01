@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { initializeApp } from 'firebase/app';
 	import { user } from '../../src/stores/userStore';
-	import { getAuth, signInWithPopup, GoogleAuthProvider, User } from 'firebase/auth';
+	import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 
 	const firebaseConfig = {
 		apiKey: import.meta.env.VITE_API_KEY,
@@ -14,9 +14,9 @@
 	};
 	const app = initializeApp(firebaseConfig);
 	const provider = new GoogleAuthProvider();
+	const auth = getAuth();
 
 	function SignIn() {
-		const auth = getAuth();
 		signInWithPopup(auth, provider)
 			.then((result) => {
 				user.set({
@@ -30,6 +30,14 @@
 				console.error(errorCode, errorMessage);
 			});
 	}
+
+	const SignOut = () => {
+		signOut(auth).then(() => {
+			user.set({
+				isLoggedIn: false
+			});
+		});
+	};
 </script>
 
 <div class="nav">
@@ -38,7 +46,9 @@
 	</a>
 	<div class="links">
 		{#if $user.isLoggedIn}
-			<div>{$user.userInfo.displayName}</div>
+			<div class="user-card">
+				<img src={$user.userInfo.photoURL} on:click={SignOut} alt={$user.userInfo.displayName} />
+			</div>
 		{:else}
 			<button on:click={SignIn}> Sign in with google</button>
 		{/if}
@@ -49,6 +59,16 @@
 <slot />
 
 <style>
+	.links {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.user-card img {
+		border-radius: 50%;
+		width: 50px;
+		height: 50px;
+	}
 	a {
 		text-decoration: none;
 	}
