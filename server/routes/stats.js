@@ -2,35 +2,27 @@ const Router = require("@koa/router");
 const router = new Router();
 const userStats = require("../models/UserStats");
 
-// TODO: Extract the get by id as a middleware
-
-// get all
+// // TODO: Extract the get by id as a middleware
+// TODO: Add all the other id methods
 router.get("/stats/", async (ctx, next) => {
   const allStats = await userStats.find();
   ctx.body = allStats;
   await next();
 });
 
-// get one
-router.get("/stats/:user", async (ctx, next) => {
-  let response;
-  try {
-    response = await userStats.findById(ctx.params.user);
-  } catch (err) {
-    console.error(err);
-    response = "user does not exists";
-  }
-  ctx.body = response;
+router.get("/stats/:user", getStatsByUserId, async (ctx, next) => {
+  ctx.body = ctx.request.userStats;
   await next();
 });
 
-// post to the route
 router.post("/stats/", async (ctx, next) => {
   let stats;
   try {
     stats = new userStats({
-      user: ctx.request.body?.user,
-      totalTime: ctx.request.body?.totalTime,
+      userID: ctx.request.body?.userID,
+      displayName: ctx.request.body?.displayName,
+      totalNumberOfSession: ctx.request.body?.totalNumberOfSession,
+      totalHours: ctx.request.body?.totalHours,
     });
     await stats.save();
   } catch (err) {
@@ -41,15 +33,13 @@ router.post("/stats/", async (ctx, next) => {
   await next();
 });
 
-// put a item
-router.put("/stats/:user", async (ctx, next) => {
+router.put("/stats/:user", getStatsByUserId, async (ctx, next) => {
   ctx.body = {
     message: `Update stats of user - ${ctx.params.user}`,
   };
   await next();
 });
 
-// delete all
 router.delete("/stats/", async (ctx, next) => {
   ctx.body = {
     message: `deleted user stats`,
@@ -57,12 +47,23 @@ router.delete("/stats/", async (ctx, next) => {
   await next();
 });
 
-// delete one
 router.delete("/stats/:user", async (ctx, next) => {
   ctx.body = {
     message: `deleted stats of user - ${ctx.params.user}`,
   };
   await next();
 });
+
+async function getStatsByUserId(ctx, next) {
+  let stats;
+  try {
+    stats = await userStats.findById(ctx.params.user);
+  } catch (err) {
+    console.error(err);
+    stats = "user does not exists";
+  }
+  ctx.request.userStats = stats;
+  await next();
+}
 
 module.exports = router;
