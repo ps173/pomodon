@@ -1,16 +1,25 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require("mongoose");
 
-// NOTE: Currently a temperory schema will be updated soon
-const userStatsSchema = new mongoose.Schema({
-  user: {
+const userStatsSchema = new Schema({
+  userID: {
     type: String,
     required: true,
   },
-  // this will give total time in hrs spent in doing pomodoro
-  totalTime: {
+  displayName: {
     type: String,
     required: true,
+  },
+  totalNumberOfSession: {
+    type: Number,
+    required: true,
+  },
+  totalHours: {
+    type: Number,
+    require: true,
+  },
+  hoursPerLabel: {
+    type: Schema.Types.Mixed,
   },
 });
 
-module.exports = mongoose.model("userStats", userStatsSchema);
+module.exports = model("userStats", userStatsSchema);

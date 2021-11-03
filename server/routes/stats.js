@@ -2,35 +2,25 @@ const Router = require("@koa/router");
 const router = new Router();
 const userStats = require("../models/UserStats");
 
-// TODO: Extract the functionality
-
-// get all
 router.get("/stats/", async (ctx, next) => {
   const allStats = await userStats.find();
   ctx.body = allStats;
   await next();
 });
 
-// get one
-router.get("/stats/:user", async (ctx, next) => {
-  let response;
-  try {
-    response = await userStats.findById(ctx.params.user);
-  } catch (err) {
-    console.error(err);
-    response = "user does not exists";
-  }
-  ctx.body = response;
+router.get("/stats/:user", getStatsByUserId, async (ctx, next) => {
+  ctx.body = ctx.request.userStats;
   await next();
 });
 
-// post to the route
 router.post("/stats/", async (ctx, next) => {
   let stats;
   try {
     stats = new userStats({
-      user: ctx.request.body?.user,
-      totalTime: ctx.request.body?.totalTime,
+      userID: ctx.request.body?.userID,
+      displayName: ctx.request.body?.displayName,
+      totalNumberOfSession: ctx.request.body?.totalNumberOfSession,
+      totalHours: ctx.request.body?.totalHours,
     });
     await stats.save();
   } catch (err) {
@@ -41,28 +31,56 @@ router.post("/stats/", async (ctx, next) => {
   await next();
 });
 
-// put a item
-router.put("/stats/:user", async (ctx, next) => {
-  ctx.body = {
-    message: `Update stats of user - ${ctx.params.user}`,
-  };
+// FIXME: REFACTOR THIS
+router.put("/stats/:user", getStatsByUserId, async (ctx, next) => {
+  ctx.request.userStats.userID = ctx.request.body?.userID;
+  ctx.request.userStats.displayName = ctx.request.body?.displayName;
+  ctx.request.userStats.totalNumberOfSession =
+    ctx.request.body?.totalNumberOfSession;
+  ctx.request.userStats.totalHours = ctx.request.body?.totalHours;
+  try {
+    const updatedStats = await ctx.request.userStats.save();
+    ctx.response.body = updatedStats;
+  } catch (err) {
+    console.error(err);
+  }
   await next();
 });
 
-// delete all
 router.delete("/stats/", async (ctx, next) => {
   ctx.body = {
-    message: `deleted user stats`,
+    message: `deleted all user stats`,
   };
+  userStats.delte;
   await next();
 });
 
-// delete one
+// FIXME: GIVES 404 status code and not found in return but still deletes the user
 router.delete("/stats/:user", async (ctx, next) => {
-  ctx.body = {
-    message: `deleted stats of user - ${ctx.params.user}`,
-  };
+  userStats.findByIdAndDelete(ctx.params.user, (err, docs) => {
+    if (err) {
+      console.error(err);
+      throw err;
+    }
+    console.log("Delted : ", docs);
+    ctx.body = {
+      message: `deleted : ${docs}`,
+    };
+    ctx.status = 204;
+  });
   await next();
 });
+
+// DOCS: Middleware for getting users by id
+async function getStatsByUserId(ctx, next) {
+  let stats;
+  try {
+    stats = await userStats.findById(ctx.params.user);
+  } catch (err) {
+    console.error(err);
+  }
+  ctx.request.userStats = stats;
+  await next();
+}
 
 module.exports = router;

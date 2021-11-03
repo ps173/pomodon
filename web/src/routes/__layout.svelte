@@ -1,8 +1,63 @@
+<script lang="ts">
+	import { initializeApp } from 'firebase/app';
+	import { user } from '../../src/stores/userStore';
+	import {
+		getAuth,
+		signInWithPopup,
+		GoogleAuthProvider,
+		signOut,
+		onAuthStateChanged
+	} from 'firebase/auth';
+
+	//  TODO: STORE USERS TO LOCALSTORAGE
+	const firebaseConfig = {
+		apiKey: import.meta.env.VITE_API_KEY,
+		authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+		projectId: import.meta.env.VITE_PROJECT_ID,
+		storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+		messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+		appId: import.meta.env.VITE_APP_ID,
+		measurementId: import.meta.env.VITE_MEASUREMENT_ID
+	};
+	initializeApp(firebaseConfig);
+	const auth = getAuth();
+
+	function SignIn() {
+		const provider = new GoogleAuthProvider();
+		signInWithPopup(auth, provider)
+			.then((result) => {
+				user.set({
+					isLoggedIn: true,
+					userInfo: result.user
+				});
+			})
+			.catch((error) => {
+				console.error(error.code, error.message);
+			});
+	}
+
+	const SignOut = () => {
+		signOut(auth).then(() => {
+			user.set({
+				isLoggedIn: false
+			});
+		});
+		localStorage.removeItem('user');
+	};
+</script>
+
 <div class="nav">
 	<a href="/">
 		<h1>Pomodon</h1>
 	</a>
 	<div class="links">
+		{#if $user.isLoggedIn}
+			<div class="user-card">
+				<img src={$user.userInfo.photoURL} on:click={SignOut} alt={$user.userInfo.displayName} />
+			</div>
+		{:else}
+			<button on:click={SignIn}> Sign in with google</button>
+		{/if}
 		<a href="/stats">Stats</a>
 		<a href="https://github.com/ps173/pomodon">github</a>
 	</div>
@@ -10,6 +65,16 @@
 <slot />
 
 <style>
+	.links {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.user-card img {
+		border-radius: 50%;
+		width: 50px;
+		height: 50px;
+	}
 	a {
 		text-decoration: none;
 	}
