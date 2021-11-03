@@ -8,10 +8,11 @@ A funky pomodoro.
 
   - [x] Timer
   - [x] Switching to svelte kit for routing
-  - [ ] Google Auth
+  - [x] Google Auth
+  - [ ] Add label options
   - [ ] Timer Settings
-  - [ ] Connect to api
   - [ ] Music Player maybe ??
+  - [ ] Connect to api
 
 - [ ] Server
 
