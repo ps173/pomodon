@@ -1,8 +1,15 @@
 <script lang="ts">
 	import { initializeApp } from 'firebase/app';
 	import { user } from '../../src/stores/userStore';
-	import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
+	import {
+		getAuth,
+		signInWithPopup,
+		GoogleAuthProvider,
+		signOut,
+		onAuthStateChanged
+	} from 'firebase/auth';
 
+	//  TODO: STORE USERS TO LOCALSTORAGE
 	const firebaseConfig = {
 		apiKey: import.meta.env.VITE_API_KEY,
 		authDomain: import.meta.env.VITE_AUTH_DOMAIN,
@@ -12,11 +19,11 @@
 		appId: import.meta.env.VITE_APP_ID,
 		measurementId: import.meta.env.VITE_MEASUREMENT_ID
 	};
-	const app = initializeApp(firebaseConfig);
-	const provider = new GoogleAuthProvider();
+	initializeApp(firebaseConfig);
 	const auth = getAuth();
 
 	function SignIn() {
+		const provider = new GoogleAuthProvider();
 		signInWithPopup(auth, provider)
 			.then((result) => {
 				user.set({
@@ -25,9 +32,7 @@
 				});
 			})
 			.catch((error) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-				console.error(errorCode, errorMessage);
+				console.error(error.code, error.message);
 			});
 	}
 
@@ -37,6 +42,7 @@
 				isLoggedIn: false
 			});
 		});
+		localStorage.removeItem('user');
 	};
 </script>
 
