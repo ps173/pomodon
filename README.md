@@ -1,6 +1,6 @@
 # Pomodon
 
-A funky pomodoro.
+A pomodoro timer.
 
 # Todo
 
